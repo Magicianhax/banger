@@ -50,6 +50,13 @@ export async function testConnection(
     });
     return { ok: true, latencyMs: Math.round(performance.now() - start) };
   } catch (err) {
-    return { ok: false, latencyMs: 0, error: (err as Error).message };
+    const e = err as { message?: string; cause?: unknown; statusCode?: number; responseBody?: string };
+    const parts = [
+      e.message,
+      e.statusCode ? `HTTP ${e.statusCode}` : null,
+      e.responseBody ? `body: ${String(e.responseBody).slice(0, 200)}` : null,
+      e.cause ? `cause: ${String((e.cause as Error)?.message ?? e.cause).slice(0, 200)}` : null,
+    ].filter(Boolean);
+    return { ok: false, latencyMs: 0, error: parts.join(' · ') || 'unknown' };
   }
 }
