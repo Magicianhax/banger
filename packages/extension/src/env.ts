@@ -1,1 +1,5 @@
-export const BACKEND_URL = 'https://banger.magician.wtf';
+const DEFAULT_BACKEND_URL = 'https://banger.magician.wtf';
+
+export const BACKEND_URL =
+  (import.meta.env.VITE_BACKEND_URL as string | undefined) ?? DEFAULT_BACKEND_URL;
+
