@@ -1,0 +1,88 @@
+.banger-popover {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: rgba(20, 20, 25, 0.95);
+  color: #fff;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  max-width: 780px;
+}
+.banger-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.banger-header button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+.banger-slots {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.banger-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border: none;
+  background: #2a2a30;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 0;
+}
+.banger-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.banger-slot-label {
+  position: absolute;
+  bottom: 4px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.banger-slot--loading .banger-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #2a2a30, #3a3a40, #2a2a30);
+  background-size: 200% 100%;
+  animation: banger-shimmer 1.2s infinite;
+}
+@keyframes banger-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.banger-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: #bbb;
+}
+.banger-slider-row input[type="range"] {
+  flex: 1;
+}
+.banger-state {
+  padding: 16px;
+  text-align: center;
+}
+.banger-state--error { color: #ff6b6b; }
+.banger-state button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: #1d9bf0;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
