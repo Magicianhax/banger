@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
-import { searchGiphy } from '../../../lib/giphy.js';
-import { searchTenor } from '../../../lib/tenor.js';
-import { InMemoryRateLimiter } from '../../../lib/rate-limit.js';
+import { searchGiphy } from '@/lib/giphy';
+import { searchTenor } from '@/lib/tenor';
+import { InMemoryRateLimiter } from '@/lib/rate-limit';
 import type { Candidate } from '@banger/shared';
 
 export const runtime = 'nodejs';

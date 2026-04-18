@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('../lib/giphy.js', () => ({
+vi.mock('@/lib/giphy', () => ({
   searchGiphy: vi.fn(async () => [
     { id: 'g1', url: 'https://g/1.gif', preview_url: 'https://g/1p.gif', title: 'g', tags: [], source: 'giphy', width: 1, height: 1 },
   ]),
 }));
-vi.mock('../lib/tenor.js', () => ({
+vi.mock('@/lib/tenor', () => ({
   searchTenor: vi.fn(async () => [
     { id: 't1', url: 'https://t/1.gif', preview_url: 'https://t/1p.gif', title: 't', tags: [], source: 'tenor', width: 1, height: 1 },
   ]),
