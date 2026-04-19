@@ -15,7 +15,11 @@
     "https://api.openai.com/*",
     "https://generativelanguage.googleapis.com/*",
     "https://banger.magician.wtf/*",
-    "http://localhost:3000/*"
+    "http://localhost:3000/*",
+    "https://*.giphy.com/*",
+    "https://media.tenor.com/*",
+    "https://c.tenor.com/*",
+    "https://tenor.googleapis.com/*"
   ],
   "content_scripts": [
     {

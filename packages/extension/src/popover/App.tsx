@@ -85,9 +85,9 @@ export function App({
               key={slot}
               slot={slot}
               suggestion={suggestion}
-              onPick={() => {
+              onPick={async () => {
                 if (!suggestion) return;
-                const ok = insertIntoReply(textareaEl, suggestion.candidate.url);
+                const ok = await insertIntoReply(textareaEl, suggestion.candidate.url);
                 if (ok) {
                   onClose();
                 } else {
