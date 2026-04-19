@@ -1,8 +1,16 @@
 import { useEffect, useState } from 'react';
 import { BACKEND_URL } from '../env.js';
 
+type Status = 'checking' | 'ok' | 'down';
+
+const STATUS_COPY: Record<Status, { label: string; text: string }> = {
+  checking: { label: 'Status', text: 'dialing in…' },
+  ok: { label: 'Status', text: 'locked in' },
+  down: { label: 'Status', text: 'backend offline' },
+};
+
 export function Settings() {
-  const [status, setStatus] = useState<'checking' | 'ok' | 'down'>('checking');
+  const [status, setStatus] = useState<Status>('checking');
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/api/health`, { method: 'GET' })
@@ -10,27 +18,42 @@ export function Settings() {
       .catch(() => setStatus('down'));
   }, []);
 
+  const copy = STATUS_COPY[status];
+
   return (
     <div className="popup">
-      <h1>Banger</h1>
-      <p style={{ fontSize: 13, color: '#aaa', marginTop: 0 }}>
-        AI meme replies for X. No setup needed — open any reply box and click the fire icon.
+      <h1 className="popup-wordmark">
+        BAN<span className="accent">GER</span>
+        <span className="chip">🔥</span>
+      </h1>
+      <p className="popup-tagline">
+        AI meme replies for X. No setup needed — just hit the diamond in any reply box.
       </p>
 
-      <div style={{ marginTop: 16, padding: 12, background: '#2a2a30', borderRadius: 6 }}>
-        <div style={{ fontSize: 12, color: '#aaa', marginBottom: 4 }}>Backend status</div>
-        {status === 'checking' && <div>Checking\u2026</div>}
-        {status === 'ok' && <div style={{ color: '#4ade80' }}>\u2713 connected</div>}
-        {status === 'down' && <div style={{ color: '#ff6b6b' }}>\u2717 backend unreachable</div>}
+      <div className="popup-status">
+        <span className="popup-status-label">{copy.label}</span>
+        <span className={`popup-status-value ${status}`}>
+          <span className={`popup-dot ${status}`} />
+          {copy.text}
+        </span>
+      </div>
+
+      <div className="popup-how">
+        <h2 className="popup-how-title">how to cook</h2>
+        <ul className="popup-how-list">
+          <li>Open any reply box on X</li>
+          <li>Tap the flaming diamond</li>
+          <li>Pick a vibe, send the banger</li>
+        </ul>
       </div>
 
       <a
+        className="popup-link"
         href="https://banger.magician.wtf"
         target="_blank"
         rel="noreferrer"
-        style={{ display: 'block', marginTop: 16, fontSize: 12, color: '#1d9bf0', textAlign: 'center' }}
       >
-        banger.magician.wtf \u2192
+        banger.magician.wtf →
       </a>
     </div>
   );

@@ -7,6 +7,7 @@ export function VibeSlider({
 }) {
   return (
     <div className="banger-slider-row">
+      <span aria-hidden="true" style={{ fontSize: 14 }}>😌</span>
       <span>mild</span>
       <input
         type="range"
@@ -17,6 +18,7 @@ export function VibeSlider({
         aria-label="Vibe intensity"
       />
       <span>savage</span>
+      <span aria-hidden="true" style={{ fontSize: 14 }}>🔥</span>
     </div>
   );
 }

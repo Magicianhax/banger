@@ -11,7 +11,10 @@ export function VibeSlot({
 }) {
   if (!suggestion) {
     return (
-      <div className="banger-slot banger-slot--loading" aria-label={`${slot} loading`}>
+      <div
+        className={`banger-slot banger-slot--loading banger-slot--${slot}`}
+        aria-label={`${slot} loading`}
+      >
         <div className="banger-shimmer" />
         <span className="banger-slot-label">{slot}</span>
       </div>
@@ -19,7 +22,7 @@ export function VibeSlot({
   }
   return (
     <button
-      className="banger-slot"
+      className={`banger-slot banger-slot--${slot}`}
       onClick={onPick}
       aria-label={`Pick ${slot} reaction`}
     >
