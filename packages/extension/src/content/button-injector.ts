@@ -1,14 +1,13 @@
-// SVG flaming diamond — drawn with DOM APIs so there's no innerHTML / HTML parsing.
+// Builds the flaming-diamond SVG via DOM APIs (no innerHTML).
 function buildFlamingDiamond(): SVGSVGElement {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('viewBox', '0 0 24 24');
-  svg.setAttribute('width', '22');
-  svg.setAttribute('height', '22');
+  svg.setAttribute('width', '20');
+  svg.setAttribute('height', '20');
   svg.setAttribute('aria-hidden', 'true');
   svg.style.display = 'block';
 
-  // Flame tail (amber, behind diamond)
   const flame = document.createElementNS(NS, 'path');
   flame.setAttribute(
     'd',
@@ -20,7 +19,6 @@ function buildFlamingDiamond(): SVGSVGElement {
   flame.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(flame);
 
-  // Diamond body (pink fill, black outline)
   const diamond = document.createElementNS(NS, 'path');
   diamond.setAttribute('d', 'M12 9L4.5 13.5L12 22.5L19.5 13.5L12 9z');
   diamond.setAttribute('fill', '#ff006e');
@@ -29,7 +27,6 @@ function buildFlamingDiamond(): SVGSVGElement {
   diamond.setAttribute('stroke-linejoin', 'round');
   svg.appendChild(diamond);
 
-  // Diamond highlight facet
   const facet = document.createElementNS(NS, 'path');
   facet.setAttribute('d', 'M12 9L9 13.5L12 22.5L12 9z');
   facet.setAttribute('fill', '#ff4091');
@@ -47,43 +44,73 @@ function ensureSharedStyle(): void {
   const style = document.createElement('style');
   style.id = ID;
   style.textContent = `
-    @keyframes banger-shake {
+    @keyframes banger-badge-shake {
       0%, 100% { transform: rotate(0deg) scale(1); }
-      20% { transform: rotate(-8deg) scale(1.12); }
-      40% { transform: rotate(8deg) scale(1.12); }
+      20% { transform: rotate(-10deg) scale(1.15); }
+      40% { transform: rotate(10deg) scale(1.15); }
       60% { transform: rotate(-6deg) scale(1.1); }
       80% { transform: rotate(4deg) scale(1.05); }
     }
-    [data-banger-button] {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      padding: 6px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    @keyframes banger-badge-in {
+      from { transform: scale(0) rotate(-180deg); opacity: 0; }
+      to { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    [data-banger-button].banger-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      margin: 0;
+      background: #0a0a0f;
+      border: 2.5px solid #000;
       border-radius: 999px;
-      transition: background 0.15s;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      box-shadow: 2px 2px 0 #000;
+      z-index: 10;
+      animation: banger-badge-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.15s, box-shadow 0.15s;
     }
-    [data-banger-button]:hover {
-      background: rgba(255, 0, 110, 0.1);
+    [data-banger-button].banger-badge:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0 #000;
     }
-    [data-banger-button]:hover svg {
-      animation: banger-shake 0.5s ease-in-out;
+    [data-banger-button].banger-badge:hover svg {
+      animation: banger-badge-shake 0.5s ease-in-out;
+    }
+    [data-banger-button].banger-badge:active {
+      transform: translate(2px, 2px);
+      box-shadow: 0 0 0 #000;
     }
   `;
   document.head.appendChild(style);
 }
 
-export function injectButton(toolbar: Element, onClick: () => void): void {
-  if (toolbar.querySelector('[data-banger-button]')) return;
+/**
+ * Injects the Banger badge at the top-right corner of the given avatar element.
+ * Idempotent: a second call on the same host is a no-op.
+ */
+export function injectButton(avatar: Element, onClick: () => void): void {
+  const host = avatar.parentElement as HTMLElement | null;
+  if (!host) return;
+  if (host.querySelector('[data-banger-button]')) return;
+
   ensureSharedStyle();
+
+  // Avatar's parent needs to be a positioning context for our absolute badge.
+  const position = getComputedStyle(host).position;
+  if (position === 'static') {
+    host.style.position = 'relative';
+  }
 
   const btn = document.createElement('button');
   btn.setAttribute('data-banger-button', '');
+  btn.classList.add('banger-badge');
   btn.type = 'button';
   btn.title = 'Banger — AI meme reply';
-
   btn.appendChild(buildFlamingDiamond());
 
   btn.addEventListener('click', (e) => {
@@ -92,10 +119,5 @@ export function injectButton(toolbar: Element, onClick: () => void): void {
     onClick();
   });
 
-  const gifBtn = toolbar.querySelector('[data-testid="gifSearchButton"]');
-  if (gifBtn?.parentElement) {
-    gifBtn.parentElement.insertBefore(btn, gifBtn.nextSibling);
-  } else {
-    toolbar.appendChild(btn);
-  }
+  host.appendChild(btn);
 }

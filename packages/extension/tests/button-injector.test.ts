@@ -2,30 +2,33 @@ import { describe, it, expect, vi } from 'vitest';
 import { injectButton } from '../src/content/button-injector.js';
 
 describe('injectButton', () => {
-  it('injects a button next to the GIF toolbar icon', () => {
-    const toolbar = document.createElement('div');
-    toolbar.setAttribute('data-testid', 'toolBar');
-    const gifBtn = document.createElement('div');
-    gifBtn.setAttribute('data-testid', 'gifSearchButton');
-    toolbar.appendChild(gifBtn);
-    document.body.appendChild(toolbar);
+  it('injects a badge into the avatar container', () => {
+    const host = document.createElement('div');
+    const avatar = document.createElement('div');
+    avatar.setAttribute('data-testid', 'UserAvatar-Container-me');
+    host.appendChild(avatar);
+    document.body.appendChild(host);
 
     const onClick = vi.fn();
-    injectButton(toolbar, onClick);
+    injectButton(avatar, onClick);
 
-    const btn = toolbar.querySelector('[data-banger-button]') as HTMLElement | null;
+    const btn = host.querySelector('[data-banger-button]') as HTMLElement | null;
     expect(btn).not.toBeNull();
+    expect(btn!.classList.contains('banger-badge')).toBe(true);
+
     btn!.click();
     expect(onClick).toHaveBeenCalled();
   });
 
-  it('is idempotent — does not inject twice in same toolbar', () => {
-    const toolbar = document.createElement('div');
-    document.body.appendChild(toolbar);
+  it('is idempotent — does not inject twice in same host', () => {
+    const host = document.createElement('div');
+    const avatar = document.createElement('div');
+    host.appendChild(avatar);
+    document.body.appendChild(host);
 
-    injectButton(toolbar, vi.fn());
-    injectButton(toolbar, vi.fn());
+    injectButton(avatar, vi.fn());
+    injectButton(avatar, vi.fn());
 
-    expect(toolbar.querySelectorAll('[data-banger-button]')).toHaveLength(1);
+    expect(host.querySelectorAll('[data-banger-button]')).toHaveLength(1);
   });
 });

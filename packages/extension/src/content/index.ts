@@ -26,16 +26,21 @@ function extractTweetContext(textareaEl: HTMLElement, tweetId: string): TweetCon
   };
 }
 
-// Walk up from the textarea to find the nearest enclosing composer root, then
-// find the toolBar inside it. We only inject when the toolbar has the GIF
-// button — that's the signal this is X's full reply composer, not a secondary
-// mini-composer or thread rendering.
-function findComposerToolbar(textareaEl: HTMLElement): Element | null {
+// Walk up from the textarea to find the enclosing reply composer. We require
+// BOTH the toolBar (with gifSearchButton — signals a real full composer) AND
+// the user avatar (where the badge attaches). That pairing eliminates ghost
+// matches against secondary mini-composers.
+function findComposer(
+  textareaEl: HTMLElement,
+): { toolbar: Element; avatar: Element } | null {
   let node: Element | null = textareaEl;
   while (node && node !== document.body) {
     const toolbar = node.querySelector('[data-testid="toolBar"]');
-    if (toolbar?.querySelector('[data-testid="gifSearchButton"]')) {
-      return toolbar;
+    const avatar =
+      node.querySelector('[data-testid^="UserAvatar-Container-"]') ??
+      node.querySelector('[data-testid="Tweet-User-Avatar"]');
+    if (toolbar?.querySelector('[data-testid="gifSearchButton"]') && avatar) {
+      return { toolbar, avatar };
     }
     node = node.parentElement;
   }
@@ -43,12 +48,12 @@ function findComposerToolbar(textareaEl: HTMLElement): Element | null {
 }
 
 onReplyBox((ctx) => {
-  const toolbar = findComposerToolbar(ctx.textareaEl);
-  if (!toolbar) return;
+  const composer = findComposer(ctx.textareaEl);
+  if (!composer) return;
 
-  injectButton(toolbar, () => {
+  injectButton(composer.avatar, () => {
     const tweet = extractTweetContext(ctx.textareaEl, ctx.tweetId);
-    mountPopover(toolbar as HTMLElement, tweet, ctx.textareaEl);
+    mountPopover(composer.toolbar as HTMLElement, tweet, ctx.textareaEl);
   });
 });
 
