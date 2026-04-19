@@ -3,9 +3,21 @@
   "name": "Banger",
   "version": "0.0.1",
   "description": "AI-powered meme replies for X.",
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
   "action": {
     "default_popup": "src/popup/index.html",
-    "default_title": "Banger settings"
+    "default_title": "Banger settings",
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png",
+      "48": "icon-48.png",
+      "128": "icon-128.png"
+    }
   },
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
