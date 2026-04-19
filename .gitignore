@@ -57,3 +57,6 @@ banger-extension*.zip
 
 # local-only notes (launch prep, scratchpads, etc.)
 *.local.md
+
+# local-only marketing assets (Remotion video, etc.)
+video/
