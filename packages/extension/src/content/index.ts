@@ -26,34 +26,53 @@ function extractTweetContext(textareaEl: HTMLElement, tweetId: string): TweetCon
   };
 }
 
-// Walk up from the textarea to find the enclosing reply composer. We require
-// BOTH the toolBar (with gifSearchButton — signals a real full composer) AND
-// the user avatar (where the badge attaches). That pairing eliminates ghost
-// matches against secondary mini-composers.
-function findComposer(
-  textareaEl: HTMLElement,
-): { toolbar: Element; avatar: Element } | null {
+// Only treat as a reply context — skip the home-feed "What's happening?" composer.
+// Signals: inside an <article> (inline thread reply), inside a [role=dialog]
+// (reply modal), or on a /status/ URL (tweet detail page).
+function isInReplyContext(textareaEl: HTMLElement): boolean {
+  if (textareaEl.closest('article[data-testid="tweet"]')) return true;
+  if (textareaEl.closest('[role="dialog"]')) return true;
+  if (/\/status\//.test(window.location.pathname)) return true;
+  return false;
+}
+
+// Walk up from the textarea to find the user avatar. Less strict than before
+// to catch both the compact "Post your reply" state and the expanded composer.
+function findReplyAvatar(textareaEl: HTMLElement): Element | null {
   let node: Element | null = textareaEl;
   while (node && node !== document.body) {
-    const toolbar = node.querySelector('[data-testid="toolBar"]');
     const avatar =
       node.querySelector('[data-testid^="UserAvatar-Container-"]') ??
       node.querySelector('[data-testid="Tweet-User-Avatar"]');
-    if (toolbar?.querySelector('[data-testid="gifSearchButton"]') && avatar) {
-      return { toolbar, avatar };
-    }
+    if (avatar) return avatar;
+    node = node.parentElement;
+  }
+  return null;
+}
+
+function findToolbar(textareaEl: HTMLElement): Element | null {
+  let node: Element | null = textareaEl;
+  while (node && node !== document.body) {
+    const toolbar = node.querySelector('[data-testid="toolBar"]');
+    if (toolbar) return toolbar;
     node = node.parentElement;
   }
   return null;
 }
 
 onReplyBox((ctx) => {
-  const composer = findComposer(ctx.textareaEl);
-  if (!composer) return;
+  if (!isInReplyContext(ctx.textareaEl)) return;
 
-  injectButton(composer.avatar, () => {
+  const avatar = findReplyAvatar(ctx.textareaEl);
+  if (!avatar) return;
+
+  injectButton(avatar, () => {
     const tweet = extractTweetContext(ctx.textareaEl, ctx.tweetId);
-    mountPopover(composer.toolbar as HTMLElement, tweet, ctx.textareaEl);
+    // Toolbar may not exist yet in compact reply state — fall back to the
+    // avatar's parent container so the popover still has something to anchor on.
+    const anchor =
+      findToolbar(ctx.textareaEl) ?? (avatar.parentElement as HTMLElement | null) ?? ctx.textareaEl;
+    mountPopover(anchor as HTMLElement, tweet, ctx.textareaEl);
   });
 });
 
