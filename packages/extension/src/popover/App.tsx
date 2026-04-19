@@ -118,15 +118,6 @@ export function App({
         >
           GIPHY
         </a>
-        <span className="banger-footer-dot"> · </span>
-        <a
-          className="banger-footer-link banger-footer-link--tenor"
-          href="https://tenor.com"
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          Tenor
-        </a>
       </footer>
     </div>
   );

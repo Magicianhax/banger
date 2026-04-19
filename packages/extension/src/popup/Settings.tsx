@@ -55,6 +55,18 @@ export function Settings() {
       >
         banger.magician.wtf →
       </a>
+
+      <footer className="popup-footer">
+        <span>Powered by </span>
+        <a
+          className="popup-footer-giphy"
+          href="https://giphy.com"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          GIPHY
+        </a>
+      </footer>
     </div>
   );
 }

@@ -163,3 +163,24 @@ body {
   transform: translate(2px, 2px);
   box-shadow: 0 0 0 #000;
 }
+
+.popup-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1.5px dashed rgba(255, 255, 255, 0.12);
+  font-family: 'Anton', sans-serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--banger-muted);
+  text-align: center;
+}
+.popup-footer-giphy {
+  font-family: 'Anton', sans-serif;
+  color: #00ff99;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  transition: opacity 0.15s;
+}
+.popup-footer-giphy:hover { opacity: 0.75; }
