@@ -231,13 +231,27 @@
 }
 
 .banger-footer {
-  margin-top: 10px;
-  font-family: var(--font-body);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1.5px dashed rgba(255, 255, 255, 0.12);
+  font-family: var(--font-display);
   font-size: 10px;
   color: var(--banger-muted);
   text-align: center;
-  letter-spacing: 0.3px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
+.banger-footer-link {
+  font-family: var(--font-display);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  transition: opacity 0.15s;
+}
+.banger-footer-link:hover { opacity: 0.75; }
+.banger-footer-link--giphy { color: #00ff99; }
+.banger-footer-link--tenor { color: #1d9bf0; }
+.banger-footer-dot { color: var(--banger-muted); margin: 0 2px; }
 
 .banger-toast {
   margin-top: 12px;

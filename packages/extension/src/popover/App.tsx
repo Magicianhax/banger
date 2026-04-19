@@ -107,6 +107,27 @@ export function App({
           copied — hit <kbd>Ctrl</kbd>+<kbd>V</kbd> to paste
         </div>
       )}
+
+      <footer className="banger-footer">
+        <span>Powered by </span>
+        <a
+          className="banger-footer-link banger-footer-link--giphy"
+          href="https://giphy.com"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          GIPHY
+        </a>
+        <span className="banger-footer-dot"> · </span>
+        <a
+          className="banger-footer-link banger-footer-link--tenor"
+          href="https://tenor.com"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Tenor
+        </a>
+      </footer>
     </div>
   );
 }
