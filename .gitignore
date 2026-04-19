@@ -52,3 +52,5 @@ tmp/
 
 # release artifacts (published via GitHub Releases, not tracked)
 banger-extension*.zip
+
+.vercel
