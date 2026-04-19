@@ -93,12 +93,11 @@ export default function DashboardHome() {
           </p>
           <a
             className="btn btn--mint"
-            href="https://chrome.google.com/webstore"
-            target="_blank"
+            href="https://github.com/Magicianhax/banger/releases/latest/download/banger-extension.zip"
             rel="noreferrer"
             style={{ marginTop: 12 }}
           >
-            Get extension
+            Get extension ↓
           </a>
         </div>
       </div>

@@ -50,11 +50,10 @@ export default function Landing() {
           </Link>
           <a
             className="btn btn--white"
-            href="https://chrome.google.com/webstore"
-            target="_blank"
+            href="https://github.com/Magicianhax/banger/releases/latest/download/banger-extension.zip"
             rel="noreferrer"
           >
-            Install for Chrome
+            Install for Chrome ↓
           </a>
         </div>
 
