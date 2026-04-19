@@ -42,19 +42,31 @@ export async function runServerPipeline(args: {
     candidates: filtered,
   });
 
-  const suggestions: Suggestion[] = VIBE_SLOTS.map((slot: VibeSlot) => {
+  const suggestions: Suggestion[] = [];
+  for (const slot of VIBE_SLOTS as readonly VibeSlot[]) {
     const picks = reranked[slot];
-    const alternates = picks
+
+    // Resolve the LLM's picks against the real candidate pool. If it
+    // hallucinated IDs or the pool was too small, fall back to the first
+    // available filtered candidates so we still return something usable.
+    let alternates = picks
       .map((p) => byId.get(p.id))
       .filter((c): c is Candidate => c !== undefined);
+
+    if (alternates.length === 0 && filtered.length > 0) {
+      alternates = filtered.slice(0, 3);
+    }
+
     const chosen = pickBySlider(alternates, args.sliderValue);
-    return {
+    if (!chosen) continue; // skip slot entirely if there's nothing to show
+
+    suggestions.push({
       slot,
       candidate: chosen,
       score: picks[0]?.score ?? 0,
       alternates: alternates.filter((c) => c.id !== chosen.id),
-    };
-  });
+    });
+  }
 
   return { suggestions, sensitive: false, latencyMs: Math.round(performance.now() - start) };
 }

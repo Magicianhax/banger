@@ -48,4 +48,6 @@ Prefer tight emotional match over literal keyword match.
 At index 0 put the BEST match for the default (medium) intensity.
 At index 1 put a MILDER alternate.
 At index 2 put a MORE INTENSE alternate.
-If candidates are weak, low scores are honest — do not inflate.`;
+If candidates are weak, low scores are honest — do not inflate.
+
+CRITICAL: every "id" you return MUST appear in the candidate list below. Do NOT invent or modify IDs. If fewer than 3 candidates fit a slot, REUSE the best-fitting IDs already in the list rather than making one up.`;
