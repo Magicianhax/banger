@@ -27,6 +27,13 @@ export const QuerySetSchema = z.object({
 });
 export type QuerySet = z.infer<typeof QuerySetSchema>;
 
+// Combined analyze output — fuses Intent + QuerySet into one LLM response
+// so the pipeline can skip the second round-trip.
+export const AnalyzedTweetSchema = IntentSchema.extend({
+  queries: QuerySetSchema,
+});
+export type AnalyzedTweet = z.infer<typeof AnalyzedTweetSchema>;
+
 export const CandidateSchema = z.object({
   id: z.string(),
   url: z.string().url(),

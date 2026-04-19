@@ -36,6 +36,7 @@ Candidates:
 ${candidateList}`,
       },
     ],
+    providerOptions: { openai: { reasoningEffort: 'minimal' } },
   });
 
   return object;

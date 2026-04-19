@@ -1,7 +1,6 @@
 import { VIBE_SLOTS, type Candidate, type Suggestion, type TweetContext, type VibeSlot } from '@banger/shared';
 import { getServerModel } from '../llm';
-import { understand } from './understand';
-import { craftQueries } from './query-craft';
+import { analyze } from './analyze';
 import { retrieve } from './retrieve';
 import { rerank } from './rerank';
 import { applyProfileWeight } from './profile-weight';
@@ -22,24 +21,23 @@ export async function runServerPipeline(args: {
   const start = performance.now();
   const model = getServerModel();
 
-  const intent = await understand({
+  const analyzed = await analyze({
     model,
     tweet: args.tweet,
     sendImages: args.sendImages ?? true,
   });
 
-  if (intent.serious) {
+  if (analyzed.serious) {
     return { suggestions: [], sensitive: true, latencyMs: Math.round(performance.now() - start) };
   }
 
-  const queries = await craftQueries({ model, intent });
-  const retrieved = await retrieve({ queries, perQueryLimit: 5 });
+  const retrieved = await retrieve({ queries: analyzed.queries, perQueryLimit: 5 });
   const filtered = applyProfileWeight(retrieved, args.blocklist);
   const byId = new Map<string, Candidate>(filtered.map((c) => [c.id, c]));
 
   const reranked = await rerank({
     model,
-    intent,
+    intent: analyzed,
     tweetText: args.tweet.text,
     candidates: filtered,
   });
