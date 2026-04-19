@@ -25,6 +25,7 @@ export function App({
 }) {
   const [sliderValue, setSliderValue] = useState(50);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
+  const [copiedHint, setCopiedHint] = useState(false);
 
   const fetchSuggestions = () => {
     setStatus({ kind: 'loading' });
@@ -86,8 +87,13 @@ export function App({
               suggestion={suggestion}
               onPick={() => {
                 if (!suggestion) return;
-                insertIntoReply(textareaEl, suggestion.candidate.url);
-                onClose();
+                const ok = insertIntoReply(textareaEl, suggestion.candidate.url);
+                if (ok) {
+                  onClose();
+                } else {
+                  setCopiedHint(true);
+                  setTimeout(onClose, 2500);
+                }
               }}
             />
           );
@@ -95,6 +101,12 @@ export function App({
       </div>
 
       <VibeSlider value={sliderValue} onChange={setSliderValue} />
+
+      {copiedHint && (
+        <div className="banger-toast">
+          copied — hit <kbd>Ctrl</kbd>+<kbd>V</kbd> to paste
+        </div>
+      )}
     </div>
   );
 }

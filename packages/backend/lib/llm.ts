@@ -8,7 +8,7 @@ const MODEL = process.env.LLM_MODEL ?? defaultModelFor(PROVIDER);
 
 function defaultModelFor(p: Provider): string {
   switch (p) {
-    case 'openai': return 'gpt-5';
+    case 'openai': return 'gpt-5-nano';
     case 'anthropic': return 'claude-haiku-4-5-20251001';
     case 'google': return 'gemini-3-flash';
   }

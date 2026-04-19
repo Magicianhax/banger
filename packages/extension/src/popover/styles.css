@@ -102,8 +102,9 @@
   cursor: pointer;
   padding: 0;
   box-shadow: var(--banger-shadow-sm);
-  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s, border-color 0.15s;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s, border-color 0.15s, z-index 0s 0.15s;
   animation: banger-slot-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  z-index: 1;
 }
 .banger-slots > :nth-child(1) { animation-delay: 0s; }
 .banger-slots > :nth-child(2) { animation-delay: 0.08s; }
@@ -117,12 +118,14 @@
 }
 
 .banger-slot:hover:not(.banger-slot--loading) {
-  transform: translate(-2px, -2px) rotate(-1.5deg);
+  transform: scale(1.15) rotate(-2deg);
   box-shadow: 6px 6px 0 #000;
   border-color: var(--banger-pink);
+  z-index: 5;
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s, border-color 0.15s, z-index 0s 0s;
 }
 .banger-slot:active:not(.banger-slot--loading) {
-  transform: translate(2px, 2px) rotate(0);
+  transform: scale(0.97) rotate(0);
   box-shadow: 0 0 0 #000;
 }
 
@@ -234,6 +237,37 @@
   color: var(--banger-muted);
   text-align: center;
   letter-spacing: 0.3px;
+}
+
+.banger-toast {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--banger-amber);
+  color: var(--banger-border);
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: 2.5px solid var(--banger-border);
+  border-radius: 8px;
+  box-shadow: var(--banger-shadow-sm);
+  text-align: center;
+  animation: banger-toast-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.banger-toast kbd {
+  display: inline-block;
+  background: #fff;
+  border: 1.5px solid var(--banger-border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  margin: 0 2px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11px;
+}
+@keyframes banger-toast-in {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* State screens (loading/error/empty/sensitive) */

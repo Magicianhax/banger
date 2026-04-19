@@ -26,17 +26,7 @@ export function VibeSlot({
       onClick={onPick}
       aria-label={`Pick ${slot} reaction`}
     >
-      <img
-        src={suggestion.candidate.preview_url}
-        alt=""
-        loading="lazy"
-        onMouseEnter={(e) => {
-          e.currentTarget.src = suggestion.candidate.url;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.src = suggestion.candidate.preview_url;
-        }}
-      />
+      <img src={suggestion.candidate.url} alt="" loading="eager" />
       <span className="banger-slot-label">{slot}</span>
     </button>
   );
