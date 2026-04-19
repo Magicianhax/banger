@@ -49,3 +49,6 @@ next-env.d.ts
 .cache/
 .parcel-cache/
 tmp/
+
+# release artifacts (published via GitHub Releases, not tracked)
+banger-extension*.zip

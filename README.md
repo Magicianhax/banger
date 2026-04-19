@@ -10,7 +10,39 @@ A Chrome extension that reads the tweet you're replying to, figures out five dif
 ![Status](https://img.shields.io/badge/status-V1%20MVP-ff006e?style=for-the-badge)
 ![Built with](https://img.shields.io/badge/built%20with-GIPHY-00ff99?style=for-the-badge)
 
+<br/>
+
+<img src="./assets/popover-demo.png" alt="Banger popover on X showing 5 vibe-matched GIF suggestions" width="820" />
+
 </div>
+
+---
+
+## 📥 Install the extension
+
+### Option 1 — Download the latest release *(recommended)*
+
+1. Head to the **[Releases page](https://github.com/Magicianhax/banger/releases)**
+2. Download `banger-extension.zip` from the latest release
+3. Unzip it anywhere on your computer
+4. Open `chrome://extensions` in Chrome
+5. Toggle **Developer mode** (top-right)
+6. Click **Load unpacked** → select the unzipped folder
+7. Pin the flaming diamond icon to your toolbar
+
+### Option 2 — Build from source
+
+See [§ Getting started](#-getting-started) below for the full dev setup.
+
+> Chrome Web Store listing coming soon.
+
+<br/>
+
+<img src="./assets/extension-popup.png" alt="Banger popup showing status and quick-start guide" width="340" align="right" />
+
+Once installed, click the flaming diamond badge on your avatar when replying to any tweet on X. Pick a vibe, and the GIF attaches as a native media upload (not a raw link). That's it.
+
+<br clear="all" />
 
 ---
 
