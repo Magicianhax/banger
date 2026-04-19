@@ -54,3 +54,6 @@ tmp/
 banger-extension*.zip
 
 .vercel
+
+# local-only notes (launch prep, scratchpads, etc.)
+*.local.md
