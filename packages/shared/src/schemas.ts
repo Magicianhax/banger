@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { VIBE_SLOTS, SUBCULTURES, PROVIDERS } from './constants.js';
+import { VIBE_SLOTS, SUBCULTURES } from './constants';
 
 export const IntentSchema = z.object({
   subject: z.string(),
@@ -58,9 +58,6 @@ export const RerankResultSchema = z.object({
 export type RerankResult = z.infer<typeof RerankResultSchema>;
 
 export const SettingsSchema = z.object({
-  provider: z.enum(PROVIDERS).nullable(),
-  apiKey: z.string().nullable(),
-  model: z.string().nullable(),
   humorProfile: z.object({
     styles: z.object({
       darkVsWholesome: z.number().min(-100).max(100),

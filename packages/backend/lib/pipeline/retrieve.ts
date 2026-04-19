@@ -1,5 +1,5 @@
-import { searchGiphy } from '../giphy.js';
-import { searchTenor } from '../tenor.js';
+import { searchGiphy } from '../giphy';
+import { searchTenor } from '../tenor';
 import type { Candidate, QuerySet } from '@banger/shared';
 
 export async function retrieve(args: {

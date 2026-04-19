@@ -1,22 +1,34 @@
-import { SearchResponseSchema, type Candidate } from '@banger/shared';
 import { BACKEND_URL } from '../env.js';
+import type { Suggestion, TweetContext } from '@banger/shared';
 
-export async function searchMemes(
-  queries: string[],
-  installId: string,
-  limit: number = 5,
-): Promise<Candidate[]> {
-  const res = await fetch(`${BACKEND_URL}/api/search`, {
+export type SuggestResult = {
+  suggestions: Suggestion[];
+  sensitive: boolean;
+  latencyMs: number;
+};
+
+export async function fetchSuggestions(args: {
+  tweet: TweetContext;
+  sliderValue: number;
+  installId: string;
+  blocklist?: string[];
+}): Promise<SuggestResult> {
+  const res = await fetch(`${BACKEND_URL}/api/suggest`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-Install-Id': installId,
+      'X-Install-Id': args.installId,
     },
-    body: JSON.stringify({ queries, limit }),
+    body: JSON.stringify({
+      tweet: args.tweet,
+      sliderValue: args.sliderValue,
+      blocklist: args.blocklist,
+      sendImages: true,
+    }),
   });
   if (!res.ok) {
-    throw new Error(`Search failed: ${res.status}`);
+    const body = await res.text().catch(() => '');
+    throw new Error(`Suggest failed: ${res.status} ${body.slice(0, 200)}`);
   }
-  const data = SearchResponseSchema.parse(await res.json());
-  return data.candidates;
+  return (await res.json()) as SuggestResult;
 }

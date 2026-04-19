@@ -4,19 +4,16 @@ import { getSettings, saveSettings, defaultSettings } from '../src/lib/storage.j
 describe('storage', () => {
   it('returns defaults when storage is empty', async () => {
     const s = await getSettings();
-    expect(s.provider).toBeNull();
     expect(s.humorProfile.enabledSubcultures).toEqual([]);
     expect(s.installId).toMatch(/^[0-9a-f-]{36}$/);
   });
 
   it('persists changes', async () => {
     const s = defaultSettings();
-    s.provider = 'anthropic';
-    s.apiKey = 'sk-test';
+    s.humorProfile.blocklist = ['nsfw'];
     await saveSettings(s);
     const loaded = await getSettings();
-    expect(loaded.provider).toBe('anthropic');
-    expect(loaded.apiKey).toBe('sk-test');
+    expect(loaded.humorProfile.blocklist).toEqual(['nsfw']);
   });
 
   it('reuses the same installId across saves', async () => {

@@ -30,9 +30,6 @@ describe('IntentSchema', () => {
 describe('SettingsSchema', () => {
   it('accepts default-shaped settings', () => {
     const input = {
-      provider: null,
-      apiKey: null,
-      model: null,
       humorProfile: {
         styles: { darkVsWholesome: 0, absurdistVsObservational: 0, dryVsHyper: 0, politicalVsApolitical: 0 },
         enabledSubcultures: [],
@@ -44,8 +41,16 @@ describe('SettingsSchema', () => {
     expect(() => SettingsSchema.parse(input)).not.toThrow();
   });
 
-  it('rejects invalid provider', () => {
-    const input = { provider: 'nope' };
+  it('rejects invalid installId (not a UUID)', () => {
+    const input = {
+      humorProfile: {
+        styles: { darkVsWholesome: 0, absurdistVsObservational: 0, dryVsHyper: 0, politicalVsApolitical: 0 },
+        enabledSubcultures: [],
+        blocklist: [],
+      },
+      behavior: { sendImagesToLLM: true, logHistoryLocally: true },
+      installId: 'not-a-uuid',
+    };
     expect(() => SettingsSchema.parse(input)).toThrow();
   });
 });

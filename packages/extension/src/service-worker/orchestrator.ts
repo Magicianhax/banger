@@ -1,15 +1,16 @@
-import { runPipeline, type PipelineResult } from '../lib/pipeline/index.js';
+import { fetchSuggestions, type SuggestResult } from '../lib/search-client.js';
 import { getSettings } from '../lib/storage.js';
 import type { TweetContext } from '@banger/shared';
 
 export async function handleSuggestRequest(args: {
   tweet: TweetContext;
   sliderValue: number;
-}): Promise<PipelineResult> {
+}): Promise<SuggestResult> {
   const settings = await getSettings();
-  return runPipeline({
+  return fetchSuggestions({
     tweet: args.tweet,
-    settings,
     sliderValue: args.sliderValue,
+    installId: settings.installId,
+    blocklist: settings.humorProfile.blocklist,
   });
 }

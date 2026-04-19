@@ -4,9 +4,6 @@ const KEY = 'banger:settings:v1';
 
 export function defaultSettings(): Settings {
   return {
-    provider: null,
-    apiKey: null,
-    model: null,
     humorProfile: {
       styles: {
         darkVsWholesome: 0,

@@ -1,11 +1,11 @@
 import { VIBE_SLOTS, type Candidate, type Suggestion, type TweetContext, type VibeSlot } from '@banger/shared';
-import { getServerModel } from '../llm.js';
-import { understand } from './understand.js';
-import { craftQueries } from './query-craft.js';
-import { retrieve } from './retrieve.js';
-import { rerank } from './rerank.js';
-import { applyProfileWeight } from './profile-weight.js';
-import { pickBySlider } from './slider.js';
+import { getServerModel } from '../llm';
+import { understand } from './understand';
+import { craftQueries } from './query-craft';
+import { retrieve } from './retrieve';
+import { rerank } from './rerank';
+import { applyProfileWeight } from './profile-weight';
+import { pickBySlider } from './slider';
 
 export type PipelineResult = {
   suggestions: Suggestion[];
