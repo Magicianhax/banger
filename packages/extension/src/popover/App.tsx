@@ -26,6 +26,29 @@ export function App({
   const [sliderValue, setSliderValue] = useState(50);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
   const [copiedHint, setCopiedHint] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  const startDrag = (e: React.MouseEvent) => {
+    // Don't start a drag if the user clicked the close button (or any button in the header).
+    if ((e.target as HTMLElement).closest('button')) return;
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startPos = position;
+
+    const onMove = (ev: MouseEvent) => {
+      setPosition({
+        x: startPos.x + ev.clientX - startX,
+        y: startPos.y + ev.clientY - startY,
+      });
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    };
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  };
 
   const fetchSuggestions = () => {
     setStatus({ kind: 'loading' });
@@ -63,8 +86,11 @@ export function App({
     status.kind === 'loading' ? "cookin' up bangers…" : 'pick your weapon';
 
   return (
-    <div className="banger-popover">
-      <header className="banger-header">
+    <div
+      className="banger-popover"
+      style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+    >
+      <header className="banger-header" onMouseDown={startDrag}>
         <span className="banger-wordmark">
           BAN<span className="banger-wordmark-accent">GER</span>
           <span className="banger-wordmark-chip">🔥 {headerCopy}</span>
