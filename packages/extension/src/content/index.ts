@@ -26,10 +26,24 @@ function extractTweetContext(textareaEl: HTMLElement, tweetId: string): TweetCon
   };
 }
 
+// Walk up from the textarea to find the nearest enclosing composer root, then
+// find the toolBar inside it. We only inject when the toolbar has the GIF
+// button — that's the signal this is X's full reply composer, not a secondary
+// mini-composer or thread rendering.
+function findComposerToolbar(textareaEl: HTMLElement): Element | null {
+  let node: Element | null = textareaEl;
+  while (node && node !== document.body) {
+    const toolbar = node.querySelector('[data-testid="toolBar"]');
+    if (toolbar?.querySelector('[data-testid="gifSearchButton"]')) {
+      return toolbar;
+    }
+    node = node.parentElement;
+  }
+  return null;
+}
+
 onReplyBox((ctx) => {
-  const toolbar = ctx.element.closest('[data-testid="toolBar"]')
-    ?? ctx.element.parentElement?.querySelector('[data-testid="toolBar"]')
-    ?? ctx.element.parentElement;
+  const toolbar = findComposerToolbar(ctx.textareaEl);
   if (!toolbar) return;
 
   injectButton(toolbar, () => {
