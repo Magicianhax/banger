@@ -1,0 +1,12 @@
+node_modules/
+out/
+
+# user-supplied media (not committed — users provide their own per the README)
+public/music.mp3
+public/voiceover.mp3
+public/clips/*.mp4
+public/clips/*.mov
+public/clips/*.webm
+
+# remotion cache
+.remotion/
