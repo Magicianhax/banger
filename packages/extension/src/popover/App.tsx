@@ -25,7 +25,6 @@ export function App({
 }) {
   const [sliderValue, setSliderValue] = useState(50);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
-  const [copiedHint, setCopiedHint] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const startDrag = (e: React.MouseEvent) => {
@@ -113,13 +112,19 @@ export function App({
               suggestion={suggestion}
               onPick={async () => {
                 if (!suggestion) return;
-                const ok = await insertIntoReply(textareaEl, suggestion.candidate.url);
-                if (ok) {
-                  onClose();
-                } else {
-                  setCopiedHint(true);
-                  setTimeout(onClose, 2500);
-                }
+                const url = suggestion.candidate.url;
+                // Close popover FIRST so its shadow-DOM host stops holding
+                // focus. X's Draft.js won't accept a paste while focus is on
+                // our popover button — it queues the paste until focus moves
+                // (which only happened when the user switched tabs).
+                onClose();
+                // Wait one frame so React unmounts the host and focus falls
+                // back to the document, then insert. The caller has already
+                // closed so we don't need the ok/fallback split — the paste
+                // either lands in Draft.js or the clipboard fallback fires
+                // silently (URL still on clipboard for a manual Ctrl+V).
+                await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+                await insertIntoReply(textareaEl, url);
               }}
             />
           );
@@ -127,12 +132,6 @@ export function App({
       </div>
 
       <VibeSlider value={sliderValue} onChange={setSliderValue} />
-
-      {copiedHint && (
-        <div className="banger-toast">
-          copied — hit <kbd>Ctrl</kbd>+<kbd>V</kbd> to paste
-        </div>
-      )}
 
       <footer className="banger-footer">
         <span>Powered by </span>
