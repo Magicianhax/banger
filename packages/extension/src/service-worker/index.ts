@@ -10,7 +10,9 @@ const MessageSchema = z.discriminatedUnion('type', [
   }),
   z.object({
     type: z.literal('insert-gif'),
-    url: z.string().url(),
+    // Accepts https CDN URLs and base64 data: URLs (the prefetched form we
+    // pass when the popover has already cached the blob).
+    url: z.string().min(1),
     targetAttr: z.string(),
     targetValue: z.string(),
   }),

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Suggestion, TweetContext } from '@banger/shared';
 import { VibeSlot } from './VibeSlot.js';
 import { VibeSlider } from './VibeSlider.js';
 import { ErrorState, SensitiveState, EmptyState } from './states.js';
 import { insertIntoReply } from './insert-into-x.js';
+import { prefetchGifAsDataUrl } from './prefetch.js';
 
 const VIBES = ['agree', 'mock', 'shocked', 'wholesome', 'savage'] as const;
 
@@ -26,6 +27,10 @@ export function App({
   const [sliderValue, setSliderValue] = useState(50);
   const [status, setStatus] = useState<Status>({ kind: 'loading' });
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  // CDN URL -> base64 data URL. Prefetching the blob here and passing the
+  // data URL to the main-world insert function eliminates the click-time
+  // network round-trip, which was the main source of the 4-5s attach lag.
+  const gifCacheRef = useRef<Map<string, string>>(new Map());
 
   const startDrag = (e: React.MouseEvent) => {
     // Don't start a drag if the user clicked the close button (or any button in the header).
@@ -75,6 +80,17 @@ export function App({
 
   useEffect(fetchSuggestions, [tweet.tweetId]);
 
+  useEffect(() => {
+    if (status.kind !== 'ready') return;
+    for (const s of status.suggestions) {
+      const url = s.candidate.url;
+      if (gifCacheRef.current.has(url)) continue;
+      void prefetchGifAsDataUrl(url).then((dataUrl) => {
+        if (dataUrl) gifCacheRef.current.set(url, dataUrl);
+      });
+    }
+  }, [status]);
+
   if (status.kind === 'sensitive')
     return <SensitiveState onProceed={fetchSuggestions} onCancel={onClose} />;
   if (status.kind === 'error')
@@ -112,7 +128,9 @@ export function App({
               suggestion={suggestion}
               onPick={async () => {
                 if (!suggestion) return;
-                await insertIntoReply(textareaEl, suggestion.candidate.url);
+                const originalUrl = suggestion.candidate.url;
+                const cached = gifCacheRef.current.get(originalUrl);
+                await insertIntoReply(textareaEl, cached ?? originalUrl);
                 onClose();
               }}
             />
