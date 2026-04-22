@@ -1,84 +1,47 @@
 /**
- * Attach a GIF to X's reply composer as a real file (same code path X uses
- * for its native GIF picker). Strategy order:
+ * Attach a GIF to X's reply composer as a real file, so X runs its native
+ * media-upload pipeline (same code path X's own GIF picker uses).
  *
- *   1. Fetch GIF bytes → dispatch a ClipboardEvent/DragEvent carrying a
- *      `File` in the DataTransfer. X's editor listens for file paste/drop
- *      and runs its media upload pipeline automatically → the GIF embeds
- *      in the tweet card, not as a raw link.
- *   2. Fall back to pasting the URL as text if the file path fails
- *      (network, CORS, or editor rejects the file).
- *   3. Last resort: copy the URL to clipboard and return false so the
- *      caller can show a "press Ctrl+V" toast.
+ * The actual fetch + paste dispatch happens in the page's MAIN world via
+ * chrome.scripting.executeScript (called from the service worker). We can't
+ * do it here because:
+ *
+ * 1. X's CSP blocks inline <script> injection.
+ * 2. ClipboardEvents constructed in the content script's isolated world are
+ *    treated as untrusted by Draft.js and often ignored.
+ * 3. The popover's shadow-DOM host holds focus, so paste events dispatched
+ *    from here get queued by Draft.js until focus moves (which is why
+ *    switching tabs made the GIF appear after a delay).
+ *
+ * What this function does: mark the textarea with a unique data attribute so
+ * the main-world injected script can find it, then message the service
+ * worker to run the injection.
  */
 export async function insertIntoReply(
   textareaEl: HTMLElement,
   url: string,
 ): Promise<boolean> {
-  textareaEl.focus();
-  moveCaretToEnd(textareaEl);
+  const targetAttr = 'data-banger-target';
+  const targetValue = `t${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
+  textareaEl.setAttribute(targetAttr, targetValue);
 
-  // Strategy 1 — file attachment (this is what makes the GIF actually embed).
   try {
-    const res = await fetch(url, { mode: 'cors' });
-    if (res.ok) {
-      const blob = await res.blob();
-      const mime = blob.type || 'image/gif';
-      const ext = mime === 'image/gif' ? 'gif' : mime.split('/')[1] ?? 'bin';
-      const file = new File([blob], `banger.${ext}`, { type: mime });
+    const response = (await chrome.runtime.sendMessage({
+      type: 'insert-gif',
+      url,
+      targetAttr,
+      targetValue,
+    })) as { ok: boolean; error?: string };
 
-      const dt = new DataTransfer();
-      dt.items.add(file);
-
-      // Paste path first — covers Draft.js-based composers.
-      const pasteEvent = new ClipboardEvent('paste', {
-        clipboardData: dt,
-        bubbles: true,
-        cancelable: true,
-      });
-      textareaEl.dispatchEvent(pasteEvent);
-      if (pasteEvent.defaultPrevented) return true;
-
-      // Drop path — some rich editors only listen for drops.
-      const dropTarget = textareaEl.closest('[role="textbox"]') ?? textareaEl;
-      const dropEvent = new DragEvent('drop', {
-        dataTransfer: dt,
-        bubbles: true,
-        cancelable: true,
-      });
-      dropTarget.dispatchEvent(dropEvent);
-      if (dropEvent.defaultPrevented) return true;
-    }
+    if (response?.ok) return true;
   } catch {
-    // Fetch or event construction failed — continue to fallbacks.
+    // fall through to clipboard fallback
   }
 
-  // Strategy 2 — URL-as-text paste.
-  try {
-    const dt = new DataTransfer();
-    dt.setData('text/plain', ` ${url} `);
-    const pasteEvent = new ClipboardEvent('paste', {
-      clipboardData: dt,
-      bubbles: true,
-      cancelable: true,
-    });
-    textareaEl.dispatchEvent(pasteEvent);
-    if (pasteEvent.defaultPrevented) return true;
-  } catch {
-    // Fall through to clipboard fallback.
-  }
+  // Clean up the marker if the injection never happened.
+  textareaEl.removeAttribute(targetAttr);
 
-  // Strategy 3 — clipboard copy + manual paste hint.
+  // Silent safety net: put the URL on the clipboard so the user can paste it.
   void navigator.clipboard.writeText(` ${url} `).catch(() => {});
   return false;
-}
-
-function moveCaretToEnd(el: HTMLElement): void {
-  const sel = window.getSelection();
-  if (!sel) return;
-  const range = document.createRange();
-  range.selectNodeContents(el);
-  range.collapse(false);
-  sel.removeAllRanges();
-  sel.addRange(range);
 }
